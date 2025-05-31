@@ -41,9 +41,6 @@ install_flatpaks() {
     flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     flatpak --user install flathub com.getpostman.Postman
-    flatpak --user install flathub org.telegram.desktop
-    flatpak --user install flathub org.signal.Signal
-    flatpak --user install flathub org.hdfgroup.HDFView
 }
 
 install_nvidia() {
