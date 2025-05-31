@@ -2,64 +2,24 @@
 REL="$(rpm -E %fedora)"
 echo "We are running Fedora $REL."
 
-setup_repos() {
-    # taskjuggler
-    sudo dnf copr enable ankursinha/rubygem-taskjuggler
-    # NeuroFedora
-    sudo dnf copr enable @neurofedora/neurofedora-extra
-
-    # RPMFusion
-    sudo dnf install \
-        https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-"$REL".noarch.rpm \
-        https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$REL".noarch.rpm \
-
-    sudo dnf update --refresh
-}
-
-update_groups() {
-    sudo dnf group upgrade --with-optional Multimedia
-
-    # Music and multimedia
-    # https://docs.fedoraproject.org/en-US/quick-docs/assembly_installing-plugins-for-playing-movies-and-music/
-    # https://rpmfusion.org/Configuration
-    sudo dnf groupupdate multimedia
-    sudo dnf groupupdate sound-and-video
-
-    # Fusion appstream data
-    sudo dnf groupupdate core
-
-    # https://rpmfusion.org/CommonBugs?highlight=%28ffmpeg%29
-    # swap
-    sudo dnf swap ffmpeg-free ffmpeg --allowerasing
-
-
-}
-
 install_basics() {
-    # Basics
-    sudo dnf install byobu tmux htop syncthing vit task taskopen tasksh neomutt \
-    weechat mpv vimiv-qt fedora-packager git-all offlineimap msmtp \
-    notmuch gnuplot /usr/bin/rg aria2 qutebrowser cscope ctags fedora-review \
-    vim-enhanced vim-X11 notmuch-vim notmuch-mutt rcm pwgen pass \
-    python3-websocket-client xsel deja-dup \
-    anka-coder-\* zathura zathura-plugins-all mupdf urlscan timew \
-    /usr/bin/ps2pdf psutils gnome-pomodoro podman python3-unidecode \
-    open-sans-fonts  /usr/bin/xindy rubygem-taskjuggler \
-    rubygem-webrick firewall-config fzf wl-clipboard \
-    cowsay fortune-mod ledger bat pew python3-devel \
-    @python-science clang-devel @c-development w3m python3-mailmerge \
-    evolution-ews qt6-qtwebengine{,-devtools} \
-    /usr/bin/texcount podman kubernetes-client \
-    closure-compiler wofi rofi fd-find /usr/bin/rstcheck /usr/bin/mypy \
-    python3-peewee libolm-python3 python3-jedi ruff /usr/bin/perlcritic \
-    trash-cli gnome-tweak-tool evolution bash-completion \
-    gnome-extensions-app cmake npm newsboat \
-    python3-msal psi-notify gcolor3 \
-    rpmfusion-packager rfpkg fedrq fbrnch \
-    --setopt=strict=0
+    sudo dnf copr enable jstaf/onedriver
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    sudo dnf config-manager addrepo --from-repofile=https://packages.microsoft.com/yumrepos/edge/config.repo
+    echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\nautorefresh=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" \
+        | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
 
-    # parcellite
-    }
+    dnf check-update
+    
+    # Basics
+    sudo dnf install seahorse audacity easyeffects gnome-extensions-app onedriver \
+    gnome-tweaks keepassxc git chromium firefox nodejs microsoft-edge-stable code edge  \
+    --setopt=strict=0
+}
+
+install_npm_packages() {
+    sudo npm install -g nvm expo-cli gulp-cli azure-functions-core-tools@4 --unsafe-perm true
+}
 
 install_texlive_packages() {
     # texlive bits
@@ -80,11 +40,7 @@ install_flatpaks() {
     echo "Installing flatpaks from Flathub"
     flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-    #flatpak --user install flathub com.skype.Client
-    #flatpak --user install flathub com.uploadedlobster.peek
-    #flatpak --user install flathub com.jgraph.drawio.desktop
-
-    flatpak --user install flathub com.spotify.Client
+    flatpak --user install flathub com.getpostman.Postman
     flatpak --user install flathub org.telegram.desktop
     flatpak --user install flathub org.signal.Signal
     flatpak --user install flathub org.hdfgroup.HDFView
